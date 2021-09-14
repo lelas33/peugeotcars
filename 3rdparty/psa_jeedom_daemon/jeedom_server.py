@@ -84,11 +84,10 @@ class my_jeedom_server:
         self.cmd_params = json.loads(self.cmd_msg)
         try:
             self.cmd_nbp = len(self.cmd_params["param"])
-            # memorise command si besoin de retry (mais sauf la commande CMD_GET_STATE_ALT)
-            if (self.cmd != CMD_GET_STATE_ALT):
-                self.last_cmd = self.cmd
-                self.last_nbp = self.cmd_nbp
-                self.last_params = self.cmd_params
+            # memorise command si besoin de retry
+            self.last_cmd = self.cmd
+            self.last_nbp = self.cmd_nbp
+            self.last_params = self.cmd_params
         except:
             self.cmd_nbp = 0
             # memorise command si besoin de retry
@@ -154,9 +153,10 @@ class my_jeedom_server:
         self.ack_hdr[6] = 0x0f
 
     def msg_resend_last_cmd(self):
-        # renvoi de la derniere commande
-        logger.info("Relance la commande: %x", self.last_cmd)
-        self.msg_execute_cmd(self.last_cmd, self.last_nbp, self.last_params)
+        # renvoi de la derniere commande (si pas CMD_GET_STATE_ALT)
+        if (self.cmd != CMD_GET_STATE_ALT):
+            logger.info("Relance la commande: %x", self.last_cmd)
+            self.msg_execute_cmd(self.last_cmd, self.last_nbp, self.last_params)
 
 # =======================================================================
 #               OLD
